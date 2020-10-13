@@ -1,0 +1,63 @@
+﻿@page "/Produto/EditProduto"
+@page "/Produto/EditProduto/{item}"
+
+@using System.Net.Http
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<h3>EditProduto</h3>
+
+<div class="card m-3">
+    <h4 class="card-header">Cadastro do Usuário</h4>
+    <div class="card-body">
+        <EditForm Model="@produto" OnValidSubmit="HandleValidSubmit" @onreset="HandleReset">
+            <DataAnnotationsValidator />
+            <div class="form-row">
+                <div class="form-group col-5">
+                    <label>Nome</label>
+                    <InputNumber @bind-Value="produto.Nome" class="form-control" />
+                    <ValidationMessage For="@(() => produto.Nome)" />
+                </div>
+                <div class="form-group col-5">
+                    <label>Descrição</label>
+                    <InputText @bind-Value="produto.Descricao" class="form-control" />
+                    <ValidationMessage For="@(() => produto.Descricao)" />
+                </div>
+                <div class="form-group col-5">
+                    <label>Valor</label>
+                    <InputNumber @bind-Value="produto.Valor" class="form-control" />
+                    <ValidationMessage For="@(() => produto.Valor)" />
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private Produto produto = new Produto();
+
+    [Parameter]
+    public string Item { get; set; }
+    private EditContext editContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var itemId = Item;
+        produto = await Http.GetFromJsonAsync<Produto>($"/Produto/GetById?id={itemId}");
+        editContext = new EditContext(produto);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await Http.PutAsJsonAsync("/Produto/Update", produto);
+        NavigationManager.NavigateTo("Produto/ListProduto");
+
+    }
+
+    private void HandleReset()
+    {
+        produto = new Produto();
+        editContext = new EditContext(produto);
+    }
+}

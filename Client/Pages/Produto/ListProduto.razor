@@ -1,0 +1,59 @@
+﻿@page "/Produto/ListProduto"
+@using System.Net.Http
+@inject HttpClient Http
+
+<h3>ListProduto</h3>
+
+<div class="card-body">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Descricao</th>
+                <th scope="col">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in prodList)
+            {
+            <tr>
+                <td>@item.ID</td>
+                <td>@item.Nome</td>
+                <td>@item.Descricao</td>
+                <td>@item.Valor</td>
+                <td>
+                    <a href="/Produto/EditProduto/@item.ID.ToString()"></a><button class="btn btn-sucess">Edit</button>
+                    <button class="btn btn-danger" @onclick="@(() => DeleteProd(item.ID))">Delete</button>
+                </td>
+            </tr>
+       }
+        </tbody>
+    </table>
+</div>
+
+@code {
+
+    private List<Produto> prodList = new List<Produto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var produtos = await Http.GetFromJsonAsync<List<Produto>>("/Produto/List");
+        foreach (var item in prodList)
+        {
+            prodList.Add(item);
+        }
+    }
+
+    private void EditProd(int itemID)
+    {
+        //call controller
+    }
+
+    private void DeleteProd(int itemID)
+    {
+        //call controller
+    }
+}
+
